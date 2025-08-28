@@ -1,0 +1,60 @@
+TODO  
+скидання паролю студента до 123456
+видалення студента
+---
+
+
+cd c:\git\dock\psscont
+docker build -t pss_img .
+docker run -p 7000:7000 --name pss_cont  pss_img
+
+docker commit pss_cont pss_img:v1
+      
+docker save -o pss.tar pss_img:v1
+
+docker load -i pss.tar
+
+--- API
+
+POST /api/proof
+{
+  "source": "string",
+  "lang": "string"
+}
+
+POST /api/check
+{
+  "id": string,
+  "solving": "string"
+}
+
+GET  /api/problems/lang/{lang}
+
+GET  /api/problems/{id}
+
+POST /api/problems
+{
+  "id": 0,
+  "title": "string",
+  "attr": "string",
+  "lang": "string",
+  "cond": "string",
+  "view": "string",
+  "hint": "string",
+  "code": "string"
+}
+---
+PUT /api/problems/{id}
+{
+  "id": 0,
+  "title": "string",
+  "attr": "string",
+  "lang": "string",
+  "cond": "string",
+  "view": "string",
+  "hint": "string",
+  "code": "string"
+}
+
+DELETE /api/problems/{id}
+
