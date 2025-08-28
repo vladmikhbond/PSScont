@@ -3,10 +3,10 @@ TODO
 видалення студента
 ---
 
-
+---
 cd c:\git\dock\psscont
 docker build -t pss_img .
-docker run -p 7000:7000 --name pss_cont  pss_img
+docker run -p 7000:7000 -v c:\Git\DOCK\PSScont/data:/data   --name pss_cont  pss_img
 
 docker commit pss_cont pss_img:v1
       
@@ -14,7 +14,7 @@ docker save -o pss.tar pss_img:v1
 
 docker load -i pss.tar
 
---- API
+--- API ----------------------------------------
 
 POST /api/proof
 {
