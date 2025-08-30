@@ -37,7 +37,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 def authenticated_user(username: str, password: str) -> User|None:
     """ Login for token issue """
     user = db.read_user(username=username)
-    pass_is_ok = bcrypt.checkpw(password.encode('utf-8'), user.password)
+    pass_is_ok = bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8'))
     if pass_is_ok:
         return user
     return None
@@ -96,10 +96,9 @@ async def login_for_access_token(
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    role = ["", "student", "tutor", "", "admin"][user.role];
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": form_data.username, "role": role}, expires_delta=access_token_expires
+        data={"sub": form_data.username, "role": user.role}, expires_delta=access_token_expires
     )
     return Token(access_token=access_token, token_type="bearer")
 

@@ -10,14 +10,14 @@ class Base(DeclarativeBase):
 class Problem(Base):
     __tablename__ = "problems"
     id: Mapped[str] = mapped_column(primary_key=True)
-    title: Mapped[str] = mapped_column(String(255))
-    attr: Mapped[str] = mapped_column(String(255))
-    lang: Mapped[str] = mapped_column(String(5))
+    title: Mapped[str] = mapped_column(String)
+    attr: Mapped[str] = mapped_column(String)
+    lang: Mapped[str] = mapped_column(String)
     cond: Mapped[str] = mapped_column(String)
     view: Mapped[str] = mapped_column(String)
     hint: Mapped[str] = mapped_column(String)
     code: Mapped[str] = mapped_column(String)
-    author: Mapped[str] = mapped_column(String(10))  
+    author: Mapped[str] = mapped_column(String)  
     timestamp: Mapped[str] = mapped_column(DateTime)
 
 
@@ -27,5 +27,5 @@ class User(Base):
     """
     __tablename__ = "users"
     username: Mapped[str] = mapped_column(primary_key=True)
-    password: Mapped[str] = mapped_column(String(255))
-    role: Mapped[int] = mapped_column(Integer)
+    password: Mapped[str] = mapped_column(String)
+    role: Mapped[str] = mapped_column(String)
