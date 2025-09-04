@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 from app.main import app
-from app.models.models import Problem
+from app.models.pss_models import Problem
 
 client = TestClient(app)
 

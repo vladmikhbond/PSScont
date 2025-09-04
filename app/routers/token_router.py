@@ -10,7 +10,7 @@ from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
 from pydantic import BaseModel
 from fastapi import APIRouter
-from ..models.models import User
+from ..models.pss_models import User
 from .. import dal as db
 
 # to get a string like this run:
@@ -34,10 +34,10 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-def authenticated_user(username: str, password: str) -> User|None:
+def authenticated_user(username: str, password: str):
     """ Login for token issue """
     user = db.read_user(username=username)
-    pass_is_ok = bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8'))
+    pass_is_ok = bcrypt.checkpw(password.encode('utf-8'), user.hashed_password)
     if pass_is_ok:
         return user
     return None
@@ -57,7 +57,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> User|None:
     """
     Декодує токен і виймає з нього ім'я юзера.
     Знаходить в БД юзера, чіє ім'я записано в токені.

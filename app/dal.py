@@ -2,7 +2,7 @@ import datetime as dt
 import uuid
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
-from .models.models import Problem, User
+from  .models.pss_models import Problem, User
 from sqlalchemy.inspection import inspect 
 import logging
 from sqlalchemy.exc import SQLAlchemyError
@@ -18,9 +18,9 @@ def read_all_users() -> list[User]:
     return users
 
 
-def add_user(user: User) -> User|None:
-    hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt())
-    user.password = hashed_password
+def add_user(username: str, password: str, role: str) -> User|None:
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    user = User(username=username, hashed_password=hashed_password, role=role)
     try:
         with Session(engine) as session:
             session.add(user)

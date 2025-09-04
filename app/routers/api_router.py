@@ -2,7 +2,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from .. import dal as db
-from ..models.models import Problem, User
+from ..models.pss_models import Problem, User
 from ..models.schemas import ProofSchema, CheckSchema, ProblemPostSchema, ProblemSchema
 from ..executors import js, py
 import re
@@ -68,17 +68,17 @@ async def register_user(
     username: str,
     password:str,
     role: str, 
-    user: Annotated[str, Depends(get_current_user)],
+    current_user: Annotated[User|None, Depends(get_current_user)],
 ):
     """
-    Register a new student.
+    Register a new user.
     """
-    # if user.role != "admin":
-    #     raise HTTPException(
-    #         status_code=status.HTTP_403_FORBIDDEN,
-    #         detail="You are not admin") 
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not admin") 
        
-    new_user = db.add_user(User(username=username, password=password, role=role))
+    new_user = db.add_user(username, password, role)
     if new_user is None:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
