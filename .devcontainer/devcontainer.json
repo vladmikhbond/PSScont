@@ -6,13 +6,11 @@
 	"build": {
 		"dockerfile": "../DevDockerfile"
 	},
-
-
-	"mounts": [
-        // Монтуємо локальну папку ./data в контейнер як /data
-        "source=${localWorkspaceFolder}/data,target=/data,type=bind"
-    ],
    
+	"mounts": [
+		"source=${env:USERPROFILE}\\..\\..\\Git\\PY\\DBconverter,target=/data,type=bind"
+	],
+
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
 

@@ -67,7 +67,7 @@ def test_put_problems(token):
     assert response.status_code == 200
     assert response.text == '"4b1aa936-9d3c-40a8-b4c8-154c2d2ccecd"'
 
-from app.data_alch import add_problem
+from app.dal import add_problem
     
 def test_delete_problems_id(token):
     body = {

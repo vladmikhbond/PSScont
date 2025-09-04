@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from .. import data_alch as db
+from .. import dal as db
 from ..models.models import Problem, User
 from ..models.schemas import ProofSchema, CheckSchema, ProblemPostSchema, ProblemSchema
 from ..executors import js, py
@@ -64,15 +64,21 @@ AuthType = Annotated[str, Depends(get_current_user)]
 
 
 @router.get("/reg/{username}", status_code=201)
-async def register_user(username: str, user: AuthType):
+async def register_user(
+    username: str,
+    password:str,
+    role: str, 
+    user: Annotated[str, Depends(get_current_user)],
+):
     """
     Register a new student.
     """
-    if user.role < 4:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not admin")    
-    new_user = db.add_user(User(username=username, password="123456", role=1))
+    # if user.role != "admin":
+    #     raise HTTPException(
+    #         status_code=status.HTTP_403_FORBIDDEN,
+    #         detail="You are not admin") 
+       
+    new_user = db.add_user(User(username=username, password=password, role=role))
     if new_user is None:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,

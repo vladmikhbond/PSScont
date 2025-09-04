@@ -11,7 +11,7 @@ from passlib.context import CryptContext
 from pydantic import BaseModel
 from fastapi import APIRouter
 from ..models.models import User
-from .. import data_alch as db
+from .. import dal as db
 
 # to get a string like this run:
 # >>> openssl rand -hex 32
