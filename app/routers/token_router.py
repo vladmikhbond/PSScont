@@ -4,6 +4,7 @@ from typing import Annotated
 
 import bcrypt
 import jwt
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jwt.exceptions import InvalidTokenError
@@ -11,13 +12,16 @@ from passlib.context import CryptContext
 from pydantic import BaseModel
 from fastapi import APIRouter
 from ..models.pss_models import User
-from .. import dal as db
+from .. import dal
+from  ..config import settings
 
 # to get a string like this run:
 # >>> openssl rand -hex 32
-SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+# SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
+
+SECRET_KEY = settings.secret_key
+ALGORITHM = settings.algorithm
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.token_lifetime
 
 class Token(BaseModel):
     access_token: str
@@ -36,7 +40,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def authenticated_user(username: str, password: str):
     """ Login for token issue """
-    user = db.read_user(username=username)
+    user = dal.read_user(username=username)
     pass_is_ok = bcrypt.checkpw(password.encode('utf-8'), user.hashed_password)
     if pass_is_ok:
         return user
@@ -76,7 +80,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> Use
 
     except InvalidTokenError:
         raise credentials_exception
-    user = db.read_user(username=token_data.username)
+    user = dal.read_user(username=token_data.username)
     if user is None:
         raise credentials_exception
     return user

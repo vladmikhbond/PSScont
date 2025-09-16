@@ -4,7 +4,7 @@
 	"name": "pss-contfiner",
 
 	"build": {
-		"dockerfile": "../DevDockerfile"
+		"dockerfile": "../Dockerfile.dev"
 	},
    
 	"mounts": [
