@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     TOKEN_LIFETIME: int
 
     class Config:
-        env_file = Path(__file__).parent / ".env"
+        env_file = "/.env"
         env_file_encoding = "utf-8"
 
 # створюємо один глобальний екземпляр

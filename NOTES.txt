@@ -4,11 +4,12 @@ TODO
 ---
 
 --- збірка і запуск продуктового контейнеру pss_cont
+
 cd c:\git\dock\psscont
 docker build -t pss_img .
-docker run -p 7000:7000 -v C:\Git\PY\DBconverter:/data   --name pss_cont  pss_img
+docker run --env-file .env --network mynet -p 7000:7000 -v C:\Git\PY\DBconverter:/data   --name pss_cont  pss_img
 
-
+-----
 docker commit pss_cont pss_img:v1      
 docker save -o pss.tar pss_img:v1
 docker load -i pss.tar
