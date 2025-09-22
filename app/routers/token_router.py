@@ -15,6 +15,12 @@ from ..models.pss_models import User
 from .. import dal
 from  ..config import settings
 
+# логування
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
 # to get a string like this run:
 # >>> openssl rand -hex 32
 # SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
@@ -41,6 +47,10 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 def authenticated_user(username: str, password: str):
     """ Login for token issue """
     user = dal.read_user(username=username)
+    ### на той випадок, якщо в базу вставляли юзера вручну
+    if isinstance(user.hashed_password, str):
+        user.hashed_password = user.hashed_password.encode('utf-8')
+    ###    
     pass_is_ok = bcrypt.checkpw(password.encode('utf-8'), user.hashed_password)
     if pass_is_ok:
         return user
@@ -64,7 +74,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> User|None:
     """
     Декодує токен і виймає з нього ім'я юзера.
-    Знаходить в БД юзера, чіє ім'я записано в токені.
+    Знаходить в БД і повертає юзера, чіє ім'я записано в токені.
     """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -73,7 +83,6 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> Use
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username = payload.get("sub")
-        role = payload.get("role")
         if username is None:
             raise credentials_exception
         token_data = TokenData(username=username)
@@ -92,7 +101,6 @@ router = APIRouter()
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()] 
 ) -> Token:
-
     user = authenticated_user(form_data.username, form_data.password)
     if user is None:
         raise HTTPException(
@@ -107,9 +115,9 @@ async def login_for_access_token(
     return Token(access_token=access_token, token_type="bearer")
 
 
-
 @router.get("/me")
 async def read_users_me(
     current_user: Annotated[User, Depends(get_current_user)],
 ):
+    logger.info(current_user.username)
     return current_user
