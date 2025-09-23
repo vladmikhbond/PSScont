@@ -1,4 +1,5 @@
 import subprocess
+import re
 
 # Якщо виконання code вклалося у встановлений ліміт часу
 # і закінчилося без винятку, або з винятком "new Error('OK')",
@@ -6,7 +7,7 @@ import subprocess
 # у іншому випадку виконная вважається хибним.
 # 
 # В разі успішного виконная функція поверте рядок, якй починається з 'OK'.
-# В разі [хибного виконная функція поверте рядок, якй не починається з 'OK'
+# В разі хибного виконная функція поверте рядок, якй не починається з 'OK'
 
 
 def exec(code, timeout):
@@ -24,9 +25,11 @@ def exec(code, timeout):
     except subprocess.TimeoutExpired:
         return "Перевищений ліміт часу."
     except subprocess.CalledProcessError as e:
-        if e.stderr.find("new Error('OK')") != -1:
+        reOK =    r'new\s+Error\s*\(\s*[\'\"]OK'
+        reWrong = r'new\s+Error\s*\(\s*[\'\"]Wrong'
+        if re.search(reOK, e.stderr):
             return "OK"
-        if e.stderr.find("new Error('Wrong") != -1:
+        if re.search(reWrong, e.stderr):
             return "Wrong"
         return "Error. " + e.stderr
     except FileNotFoundError:
