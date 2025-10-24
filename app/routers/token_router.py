@@ -1,4 +1,4 @@
-
+import os
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
@@ -13,7 +13,7 @@ from pydantic import BaseModel
 from fastapi import APIRouter
 from ..models.pss_models import User
 from .. import dal
-from  ..config import settings
+
 
 # логування
 import logging
@@ -25,9 +25,9 @@ logger = logging.getLogger(__name__)
 # >>> openssl rand -hex 32
 # SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 
-SECRET_KEY = settings.SECRET_KEY
-ALGORITHM = settings.ALGORITHM
-TOKEN_LIFETIME = settings.TOKEN_LIFETIME
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")
+TOKEN_LIFETIME = int(os.getenv("TOKEN_LIFETIME"))
 
 class Token(BaseModel):
     access_token: str
