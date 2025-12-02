@@ -9,11 +9,12 @@ from sqlalchemy.exc import SQLAlchemyError
 import bcrypt
 
 engine = create_engine(f"sqlite:////data/PSS.db", echo=True)
+engine_users = create_engine(f"sqlite:////data/Users.db", echo=True)
 
 # ===================== Users ======================
 
 def read_all_users() -> list[User]:
-    with Session(engine) as session:
+    with Session(engine_users) as session:
         users = session.query(User).all()
     return users
 
@@ -22,7 +23,7 @@ def add_user(username: str, password: str, role: str) -> User|None:
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     user = User(username=username, hashed_password=hashed_password, role=role)
     try:
-        with Session(engine) as session:
+        with Session(engine_users) as session:
             session.add(user)
             session.commit()
             session.refresh(user) 
@@ -34,7 +35,7 @@ def add_user(username: str, password: str, role: str) -> User|None:
 
 def read_user(username: str) -> User|None:
     try:
-        with Session(engine) as session:
+        with Session(engine_users) as session:
             user = session.get(User, username)
         return user
     except Exception as e:
