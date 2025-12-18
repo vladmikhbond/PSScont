@@ -57,19 +57,19 @@ def exec(code, timeout):
 
             prog_path = os.path.join(td, 'Program.cs')
             
-            # Обгортаємо код користувача у блок try/catch щоб зловити винятки і вивести їх у stderr
-            program_text = f"""using System;
-class Program {{
-    static void Main(string[] args) {{
-        try {{
-{code}
-        }} catch (Exception e) {{
-            Console.Error.WriteLine(e.ToString());
-            Environment.Exit(1);
-        }}
-    }}
-}}
-"""
+#             # Обгортаємо код користувача у блок try/catch щоб зловити винятки і вивести їх у stderr
+#             program_text = f"""using System;
+# class Program {{
+#     static void Main(string[] args) {{
+#         try {{
+# {code}
+#         }} catch (Exception e) {{
+#             Console.Error.WriteLine(e.ToString());
+#             Environment.Exit(1);
+#         }}
+#     }}
+# }}
+# """
             with open(prog_path, 'w', encoding='utf-8') as f:
                 f.write(code)
 

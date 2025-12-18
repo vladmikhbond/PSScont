@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from .. import dal as db
 from ..models.pss_models import Problem, User
 from ..models.schemas import ProofSchema, CheckSchema, ProblemPostSchema, ProblemSchema
-from ..executors import js, py
+from ..executors import js, py, cs
 import re
 
 router = APIRouter()
@@ -24,7 +24,7 @@ async def post_check(schema: CheckSchema) -> str:
     if regex == None:
        return "Wrong Language" 
     newCode = re.sub(regex, schema.solving, problem.code, count=1, flags=re.DOTALL)
-    return exec_helper(problem.lang, newCode, timeout=2)
+    return exec_helper(problem.lang, newCode)
      
 
 @router.post("/proof")
@@ -34,11 +34,11 @@ async def post_proof(schema: ProofSchema) -> str:
     Виконує програму, повертає повідомлення про результат.
     Повідомлення про позитивний результат починається з OK
     """
-    return exec_helper(schema.lang, schema.source, timeout=2)
+    return exec_helper(schema.lang, schema.source)
     
          
 def regex_helper(lang:str):
-    if lang == 'js':
+    if lang == 'js' or lang == 'cs':
         return r"//BEGIN.*//END"
     elif lang == 'py':
         return r"#BEGIN.*#END"
@@ -46,11 +46,13 @@ def regex_helper(lang:str):
         return None
 
 
-def exec_helper(lang:str, source: str, timeout: float):
+def exec_helper(lang:str, source: str):
     if lang == 'js':
-        return js.exec(source, timeout=timeout)
+        return js.exec(source, timeout=2)
     elif lang == 'py':
-        return py.exec(source, timeout=timeout)
+        return py.exec(source, timeout=2)
+    elif lang == 'cs':
+        return cs.exec(source, timeout=5)
     else:
         return "Error: Unknown language"
 
@@ -120,7 +122,7 @@ async def post_problems(schema: ProblemPostSchema, user: AuthType) :
     POST /api/problems     \n
     Перевіряє код і, якщо він годний, додає нову задачу в базу даних.
     """
-    message = exec_helper(schema.lang, schema.code, timeout=2)
+    message = exec_helper(schema.lang, schema.code)
     if message.startswith("OK"):    
         problem = Problem(**schema.model_dump())
  
@@ -140,7 +142,7 @@ async def put_problems(schema: ProblemSchema, user: AuthType):
     PUT /api/problems    \n
     Перевіряє код і, якщо він годний, змінює задачу в базі даних.
     """
-    message = exec_helper(schema.lang, schema.code, timeout=2)
+    message = exec_helper(schema.lang, schema.code)
     if message.startswith("OK"):          
         problem = Problem(**schema.model_dump())
         changed_problem = db.edit_problem(problem)

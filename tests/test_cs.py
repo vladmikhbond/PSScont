@@ -7,7 +7,7 @@ class Program {{
     }}
 }}
 """
-timeout = 20
+timeout = 10
 
 def test_cs_success():
     code = """
@@ -37,6 +37,6 @@ def test_cs_overtime():
     code = """
        while (true) Console.WriteLine(111);
     """
-    res = cs.exec(code, 0.5)
+    res = cs.exec(code, 1)
     code = TEMPLATE.format(code)
     assert res.startswith('Перевищений')
