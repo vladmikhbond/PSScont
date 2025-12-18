@@ -1,12 +1,12 @@
 import subprocess
 
 
-def exec(py_code, timeout):
+def exec(code, timeout):
     try:
-        # Виконуємо node з кодом через stdin
+        # Виконуємо python з кодом через stdin
         result = subprocess.run(
             ['python'],
-            input=py_code,
+            input=code,
             capture_output=True,
             text=True,
             timeout=timeout,

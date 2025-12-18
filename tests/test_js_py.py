@@ -54,4 +54,3 @@ def test_py_overtime():
     """
     res = py.exec(code, 0.5)
     assert res.startswith('Перевищений')
-

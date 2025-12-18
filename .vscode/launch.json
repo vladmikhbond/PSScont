@@ -21,7 +21,7 @@
             "name": "Pytest debug",
             "type": "debugpy",
             "module": "pytest",
-            "args": ["tests/test_executors.py", "-q", "--disable-warnings"],
+            "args": ["tests/test_cs.py", "-q", "--disable-warnings"],
             "request": "launch",
             "console": "integratedTerminal"
         }

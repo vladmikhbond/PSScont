@@ -23,3 +23,6 @@ coverage.xml
 # Environment variables
 .env.local
 .env.*
+
+# temprary files
+app/executors/.cs_template
